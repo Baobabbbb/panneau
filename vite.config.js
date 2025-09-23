@@ -8,5 +8,9 @@ export default defineConfig({
     port: 5174, // Port séparé pour la sécurité
     host: '192.168.1.19'
   },
-  publicDir: 'public'
+  publicDir: 'public',
+  build: {
+    outDir: 'dist',
+    sourcemap: false
+  }
 }) 
