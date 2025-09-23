@@ -1,0 +1,25 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "npm run preview -- --host 0.0.0.0 --port $PORT"
+healthcheckPath = "/"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+[[services]]
+internalPort = 4173
+
+[build.env]
+NODE_ENV = "production"
+NPM_CONFIG_PRODUCTION = "false"
+
+# Configuration pour éviter les conflits avec node_modules
+[build.variables]
+NIXPACKS_BUILD_CMD = "rm -rf node_modules/.cache && rm -rf node_modules && npm ci --omit=dev && npm run build"
+NIXPACKS_START_CMD = "npm run preview -- --host 0.0.0.0 --port $PORT"
+
+# Variables d'environnement pour Supabase
+[deploy.env]
+VITE_SUPABASE_URL = "https://xfbmdeuzuyixpmouhqcv.supabase.co"
+VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmYm1kZXV6dXlpeHBtb3VocWN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkzMzE3ODQsImV4cCI6MjA2NDkwNzc4NH0.XzFIT3BwW9dKRrmFFbSAufCpC1SZuUI-VU2Uer5VoTw"
