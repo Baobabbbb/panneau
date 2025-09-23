@@ -16,7 +16,7 @@ NPM_CONFIG_PRODUCTION = "false"
 
 # Configuration pour éviter les conflits avec node_modules
 [build.variables]
-NIXPACKS_BUILD_CMD = "rm -rf node_modules/.cache && rm -rf node_modules && npm ci --omit=dev && npm run build"
+NIXPACKS_BUILD_CMD = "npm run build:clean"
 NIXPACKS_START_CMD = "npm run preview -- --host 0.0.0.0 --port $PORT"
 
 # Variables d'environnement pour Supabase
