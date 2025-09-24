@@ -11,6 +11,17 @@ export default defineConfig({
   publicDir: 'public',
   build: {
     outDir: 'dist',
-    sourcemap: false
+    sourcemap: false,
+    // Configuration optimisée pour Railway
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    }
+  },
+  preview: {
+    port: 4173,
+    host: '0.0.0.0'
   }
 }) 
