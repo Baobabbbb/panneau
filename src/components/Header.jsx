@@ -27,7 +27,7 @@ const Header = ({ onMenuClick, sidebarOpen }) => {
           <div className="admin-header-brand">
             <div className="admin-logo">
               <div className="admin-logo-text">
-                <h1>FRIDAY</h1>
+                <h1>HERBBIE</h1>
                 <span>Administration</span>
               </div>
             </div>

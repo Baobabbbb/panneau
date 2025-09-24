@@ -1,6 +1,6 @@
 @echo off
 echo ========================================
-echo    🎨 FRIDAY - Panneau Administrateur
+echo    🎨 HERBBIE - Panneau Administrateur
 echo ========================================
 echo.
 echo Lancement du panneau administrateur...

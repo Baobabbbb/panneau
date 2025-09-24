@@ -171,7 +171,7 @@ const FeatureManager = () => {
           </div>
           <div className="admin-card-body">
             <p>
-              Les fonctionnalités activées sont visibles pour tous les utilisateurs de FRIDAY. 
+              Les fonctionnalités activées sont visibles pour tous les utilisateurs de HERBBIE. 
               Les modifications sont appliquées immédiatement.
             </p>
             <ul className="feature-info-list">

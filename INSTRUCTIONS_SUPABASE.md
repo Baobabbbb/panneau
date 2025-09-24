@@ -1,8 +1,8 @@
-# Instructions pour connecter le panneau admin à la base de données FRIDAY
+# Instructions pour connecter le panneau admin à la base de données HERBBIE
 
 ## 🔗 Connexion à Supabase
 
-Le panneau admin est maintenant configuré pour se connecter à votre base de données FRIDAY. Voici les étapes pour activer la connexion :
+Le panneau admin est maintenant configuré pour se connecter à votre base de données HERBBIE. Voici les étapes pour activer la connexion :
 
 ### 📋 Étape 1 : Exécuter la fonction SQL
 
@@ -119,7 +119,7 @@ WHERE tablename = 'profiles';
 
 Une fois connecté, le panneau admin permettra de :
 
-- ✅ **Voir tous les utilisateurs** de votre base de données FRIDAY
+- ✅ **Voir tous les utilisateurs** de votre base de données HERBBIE
 - ✅ **Rechercher** par nom ou email
 - ✅ **Filtrer** par statut et rôle
 - ✅ **Modifier le statut** (actif, suspendu, inactif)
@@ -137,6 +137,6 @@ Si le panneau affiche encore des données de test :
 
 ## 📞 Support
 
-Le panneau admin est maintenant **complètement connecté** à votre base de données FRIDAY ! 🎉
+Le panneau admin est maintenant **complètement connecté** à votre base de données HERBBIE ! 🎉
 
 

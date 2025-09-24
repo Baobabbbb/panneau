@@ -1,8 +1,8 @@
-# 🎨 FRIDAY - Panneau Administrateur
+# 🎨 HERBBIE - Panneau Administrateur
 
 ## 📋 Vue d'ensemble
 
-Panneau d'administration dédié pour FRIDAY, permettant de gérer les fonctionnalités et paramètres du système de génération de contenu créatif pour enfants.
+Panneau d'administration dédié pour HERBBIE, permettant de gérer les fonctionnalités et paramètres du système de génération de contenu créatif pour enfants.
 
 ## 🚀 Lancement Rapide
 
@@ -48,7 +48,7 @@ panneau/
 ### ✅ Implémentées
 
 #### 1. **Gestion des fonctionnalités** ⚙️
-- Activation/désactivation des services FRIDAY
+- Activation/désactivation des services HERBBIE
 - Statistiques en temps réel
 - Interface intuitive avec toggles
 - Notifications de confirmation
@@ -85,7 +85,7 @@ panneau/
 
 ## 🎨 Design
 
-### Couleurs FRIDAY
+### Couleurs HERBBIE
 - **Primaire** : `#6B4EFF` (Violet)
 - **Secondaire** : `#FF85A1` (Rose)
 - **Accent** : `#FFD166` (Jaune)
@@ -137,11 +137,11 @@ npm run build
 npm run preview
 ```
 
-## 🔗 Intégration avec FRIDAY
+## 🔗 Intégration avec HERBBIE
 
-Le panneau administrateur utilise le même système de gestion des fonctionnalités que FRIDAY principal :
+Le panneau administrateur utilise le même système de gestion des fonctionnalités que HERBBIE principal :
 
-- **LocalStorage partagé** : `fridayFeatures`
+- **LocalStorage partagé** : `herbbieFeatures`
 - **Événements synchronisés** : `featuresUpdated`
 - **API cohérente** : Mêmes fonctions de gestion
 
@@ -165,7 +165,7 @@ Le panneau affiche en temps réel :
 - [x] Structure de base
 - [x] Gestion des fonctionnalités
 - [x] Interface responsive
-- [x] Design cohérent avec FRIDAY
+- [x] Design cohérent avec HERBBIE
 
 ### Phase 2 🔄 (En cours)
 - [ ] Gestion des utilisateurs
@@ -183,4 +183,4 @@ Le panneau administrateur est conçu pour être extensible. Chaque nouvelle fonc
 
 ---
 
-**FRIDAY Panneau Administrateur** - Interface moderne pour la gestion de FRIDAY 🎨✨ 
+**HERBBIE Panneau Administrateur** - Interface moderne pour la gestion de HERBBIE 🎨✨ 

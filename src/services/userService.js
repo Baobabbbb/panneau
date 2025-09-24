@@ -1,4 +1,4 @@
-// Service pour la gestion des utilisateurs connecté à la base de données FRIDAY
+// Service pour la gestion des utilisateurs connecté à la base de données HERBBIE
 // Utilise fetch pour appeler directement l'API Supabase
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://xfbmdeuzuyixpmouhqcv.supabase.co';
@@ -67,7 +67,7 @@ export const userService = {
     return [
       {
         id: '1',
-        email: 'admin@friday.com',
+        email: 'admin@herbbie.com',
         name: 'Administrateur Principal',
         firstName: 'Administrateur',
         lastName: 'Principal',
@@ -127,10 +127,10 @@ export const userService = {
       },
       {
         id: '6',
-        email: 'moderator@friday.com',
-        name: 'Modérateur FRIDAY',
+        email: 'moderator@herbbie.com',
+        name: 'Modérateur HERBBIE',
         firstName: 'Modérateur',
-        lastName: 'FRIDAY',
+        lastName: 'HERBBIE',
         status: 'active',
         role: 'moderator',
         createdAt: '2024-01-10T00:00:00Z',
