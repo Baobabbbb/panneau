@@ -107,6 +107,7 @@ export const AuthProvider = ({ children }) => {
     session,
     signIn,
     signOut,
+    authenticateWithToken: authService.authenticateWithToken.bind(authService),
     isAuthenticated: !!user && isAdmin
   };
 

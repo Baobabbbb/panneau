@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './components/Login';
@@ -58,10 +58,42 @@ function App() {
 
 // Composant de contenu qui vérifie l'authentification
 const AppContent = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, authenticateWithToken } = useAuth();
+  const [autoAuthLoading, setAutoAuthLoading] = useState(false);
 
-  // Afficher un écran de chargement pendant la vérification de l'authentification
-  if (loading) {
+  // Vérifier l'authentification automatique au montage
+  useEffect(() => {
+    const checkAutoAuth = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      const source = urlParams.get('source');
+
+      if (token && source === 'herbbie') {
+        console.log('🚀 Détection d\'accès via Herbbie - Authentification automatique');
+        setAutoAuthLoading(true);
+        
+        try {
+          const result = await authenticateWithToken(token);
+          if (result) {
+            // Nettoyer l'URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+            console.log('✅ Authentification automatique réussie');
+          } else {
+            console.warn('❌ Authentification automatique échouée');
+          }
+        } catch (error) {
+          console.error('Erreur authentification automatique:', error);
+        } finally {
+          setAutoAuthLoading(false);
+        }
+      }
+    };
+
+    checkAutoAuth();
+  }, [authenticateWithToken]);
+
+  // Afficher un écran de chargement pendant la vérification
+  if (loading || autoAuthLoading) {
     return (
       <div className="loading-container">
         <motion.div
@@ -74,7 +106,12 @@ const AppContent = () => {
             <span>Administration</span>
           </div>
         </motion.div>
-        <p>Vérification de l'accès administrateur...</p>
+        <p>
+          {autoAuthLoading 
+            ? 'Authentification automatique en cours...' 
+            : 'Vérification de l\'accès administrateur...'
+          }
+        </p>
       </div>
     );
   }

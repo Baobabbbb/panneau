@@ -126,6 +126,47 @@ export const authService = {
     }
   },
 
+  // Authentification automatique via token URL
+  async authenticateWithToken(token) {
+    try {
+      console.log('🔑 Authentification automatique avec token');
+      
+      // Utiliser le token pour récupérer l'utilisateur
+      const { data: { user }, error } = await supabase.auth.getUser(token);
+      
+      if (error || !user) {
+        console.warn('Token invalide:', error);
+        return false;
+      }
+
+      // Vérifier si l'utilisateur est admin
+      const isAdmin = await this.checkUserIsAdmin(user);
+      
+      if (isAdmin) {
+        console.log('✅ Authentification automatique réussie:', user.email);
+        
+        // Créer une session temporaire
+        const session = {
+          user,
+          access_token: token,
+          token_type: 'bearer',
+          expires_at: Date.now() + (3600 * 1000) // 1 heure
+        };
+        
+        // Stocker la session
+        await supabase.auth.setSession(session);
+        
+        return { user, isAdmin, session };
+      } else {
+        console.warn('❌ Utilisateur non admin:', user.email);
+        return false;
+      }
+    } catch (error) {
+      console.error('Erreur authentification automatique:', error);
+      return false;
+    }
+  },
+
   // Obtenir la session actuelle
   async getCurrentSession() {
     try {
