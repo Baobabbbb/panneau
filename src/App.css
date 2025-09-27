@@ -98,6 +98,57 @@
   animation: spin 1s linear infinite;
 }
 
+/* Auth loading screen */
+.loading-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f0ff 0%, #e8e2f7 100%);
+  padding: 20px;
+  text-align: center;
+}
+
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border: 4px solid rgba(107, 78, 255, 0.2);
+  border-top: 4px solid #6B4EFF;
+  border-radius: 50%;
+  margin-bottom: 24px;
+}
+
+.loading-logo {
+  text-align: center;
+}
+
+.loading-logo h1 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #6B4EFF;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.5px;
+}
+
+.loading-logo span {
+  display: block;
+  font-size: 14px;
+  color: #FF85A1;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.loading-container p {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+  font-weight: 500;
+}
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }

@@ -137,6 +137,36 @@ npm run build
 npm run preview
 ```
 
+## 🔐 Authentification et Sécurité
+
+Le panneau administrateur est protégé par un système d'authentification basé sur Supabase qui garantit que seuls les administrateurs peuvent accéder aux fonctionnalités.
+
+### 🔒 Fonctionnalités de sécurité
+
+- **Connexion obligatoire** : Accès impossible sans authentification
+- **Vérification du rôle admin** : Seuls les utilisateurs avec le rôle `admin` ou `super_admin` peuvent se connecter
+- **Session persistante** : L'utilisateur reste connecté entre les sessions
+- **Déconnexion sécurisée** : Nettoyage complet de la session
+
+### 👤 Gestion des comptes administrateurs
+
+Pour ajouter un nouvel administrateur :
+
+1. **Créer un compte utilisateur** dans HERBBIE principal
+2. **Modifier le rôle** dans la base de données Supabase :
+   ```sql
+   UPDATE profiles
+   SET role = 'admin'
+   WHERE id = 'user_id';
+   ```
+3. **L'utilisateur peut maintenant se connecter** au panneau administrateur
+
+### 🔑 Connexion
+
+- **URL d'accès** : `http://localhost:5174` (en développement)
+- **Identifiants** : Email et mot de passe du compte HERBBIE
+- **Vérification** : Le système vérifie automatiquement le rôle administrateur
+
 ## 🔗 Intégration avec HERBBIE
 
 Le panneau administrateur utilise le même système de gestion des fonctionnalités que HERBBIE principal :
