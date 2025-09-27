@@ -1,5 +1,5 @@
 // Service d'authentification pour le panneau administrateur HERBBIE
-// Utilise Supabase pour l'authentification et vérifie le rôle admin
+// Utilise la même logique que l'application principale
 
 import { createClient } from '@supabase/supabase-js';
 
@@ -8,14 +8,17 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJ
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Email de l'admin principal (comme dans Herbbie)
+const ADMIN_EMAIL = 'fredagathe77@gmail.com';
+
 export const authService = {
   // Initialisation de l'écouteur d'état d'authentification
   initAuthListener(callback) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (callback) {
         if (session?.user) {
-          // Vérifier si l'utilisateur est admin
-          const isAdmin = await this.checkUserIsAdmin(session.user.id);
+          // Vérifier si l'utilisateur est admin (même logique que Herbbie)
+          const isAdmin = await this.checkUserIsAdmin(session.user);
           callback({ user: session.user, isAdmin, session });
         } else {
           callback(null);
@@ -38,8 +41,8 @@ export const authService = {
       }
 
       if (data.user) {
-        // Vérifier si l'utilisateur est admin
-        const isAdmin = await this.checkUserIsAdmin(data.user.id);
+        // Vérifier si l'utilisateur est admin (même logique que Herbbie)
+        const isAdmin = await this.checkUserIsAdmin(data.user);
         if (!isAdmin) {
           // Déconnecter l'utilisateur s'il n'est pas admin
           await this.signOut();
@@ -78,7 +81,7 @@ export const authService = {
       }
 
       if (user) {
-        const isAdmin = await this.checkUserIsAdmin(user.id);
+        const isAdmin = await this.checkUserIsAdmin(user);
         return { user, isAdmin };
       }
 
@@ -89,28 +92,31 @@ export const authService = {
     }
   },
 
-  // Vérifier si l'utilisateur est administrateur
-  async checkUserIsAdmin(userId) {
+  // Vérifier si l'utilisateur est administrateur (même logique que Herbbie)
+  async checkUserIsAdmin(user) {
     try {
-      // Utiliser fetch directement pour éviter les problèmes d'import
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=role`, {
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      // 1. Vérifier si c'est l'admin principal (hardcodé comme dans Herbbie)
+      if (user.email === ADMIN_EMAIL) {
+        console.log('👑 Admin principal détecté:', user.email);
+        return true;
+      }
 
-      if (!response.ok) {
-        console.warn('Impossible de vérifier le rôle admin:', response.status);
+      // 2. Vérifier dans la table profiles pour les autres admins
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.warn('Impossible de vérifier le rôle admin:', error);
         return false;
       }
 
-      const profiles = await response.json();
-
-      if (profiles && profiles.length > 0) {
-        const userRole = profiles[0].role;
-        return userRole === 'admin' || userRole === 'super_admin';
+      if (profile) {
+        const isAdminRole = profile.role === 'admin' || profile.role === 'super_admin';
+        console.log(`👤 Utilisateur ${user.email} - Rôle: ${profile.role} - Admin: ${isAdminRole}`);
+        return isAdminRole;
       }
 
       return false;
