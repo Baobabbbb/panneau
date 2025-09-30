@@ -1,31 +1,31 @@
 // Service pour synchroniser les fonctionnalités avec Herbbie
-const HERBBIE_STORAGE_KEY = 'herbbie_features_config';
+const SHARED_STORAGE_KEY = 'admin_features_config';
 
 // Fonction pour synchroniser les fonctionnalités avec Herbbie
 export const syncFeaturesWithHerbbie = (features) => {
   try {
-    // Sauvegarder dans le localStorage pour que Herbbie puisse les récupérer
-    localStorage.setItem(HERBBIE_STORAGE_KEY, JSON.stringify(features));
-    
+    // Sauvegarder dans le localStorage avec la clé partagée
+    localStorage.setItem(SHARED_STORAGE_KEY, JSON.stringify(features));
+
     // Déclencher plusieurs événements pour s'assurer que Herbbie reçoit la mise à jour
-    window.dispatchEvent(new CustomEvent('herbbieFeaturesUpdate', { 
-      detail: features 
+    window.dispatchEvent(new CustomEvent('herbbieFeaturesUpdate', {
+      detail: features
     }));
-    
+
     // Événement alternatif pour compatibilité
-    window.dispatchEvent(new CustomEvent('featuresUpdated', { 
-      detail: features 
+    window.dispatchEvent(new CustomEvent('featuresUpdated', {
+      detail: features
     }));
-    
+
     // Événement de stockage pour déclencher les écouteurs storage
     window.dispatchEvent(new StorageEvent('storage', {
-      key: HERBBIE_STORAGE_KEY,
+      key: SHARED_STORAGE_KEY,
       newValue: JSON.stringify(features),
-      oldValue: localStorage.getItem(HERBBIE_STORAGE_KEY),
+      oldValue: localStorage.getItem(SHARED_STORAGE_KEY),
       storageArea: localStorage
     }));
-    
-    console.log('🔄 Fonctionnalités synchronisées avec Herbbie:', features);
+
+    console.log('🔄 Fonctionnalités synchronisées avec Herbbie (clé partagée):', features);
     return true;
   } catch (error) {
     console.error('Erreur lors de la synchronisation avec Herbbie:', error);
@@ -36,7 +36,7 @@ export const syncFeaturesWithHerbbie = (features) => {
 // Fonction pour récupérer les fonctionnalités depuis Herbbie
 export const getFeaturesFromHerbbie = () => {
   try {
-    const stored = localStorage.getItem(HERBBIE_STORAGE_KEY);
+    const stored = localStorage.getItem(SHARED_STORAGE_KEY);
     if (stored) {
       return JSON.parse(stored);
     }

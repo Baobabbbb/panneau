@@ -1,5 +1,6 @@
 // Service pour gérer l'état des fonctionnalités du site (version locale)
-const STORAGE_KEY = 'herbbie_features_config';
+// Utilise la même clé que Herbbie pour permettre la synchronisation
+const STORAGE_KEY = 'admin_features_config';
 
 // Configuration par défaut des fonctionnalités
 const DEFAULT_FEATURES = {
