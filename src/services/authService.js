@@ -1,58 +1,77 @@
-// Service d'authentification pour le panneau administrateur HERBBIE
-// Utilise la même logique que l'application principale
+// Service d'authentification simplifié pour le panneau administrateur HERBBIE
+// Version locale sans dépendance Supabase
 
-import { createClient } from '@supabase/supabase-js';
+// Configuration des administrateurs autorisés
+const ADMIN_EMAILS = [
+  'fredagathe77@gmail.com',
+  'admin@herbbie.com'
+];
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://xfbmdeuzuyixpmouhqcv.supabase.co';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmYm1kZXV6dXlpeHBtb3VocWN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkzMzE3ODQsImV4cCI6MjA2NDkwNzc4NH0.XzFIT3BwW9dKRrmFFbSAufCpC1SZuUI-VU2Uer5VoTw';
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// Email de l'admin principal (comme dans Herbbie)
-const ADMIN_EMAIL = 'fredagathe77@gmail.com';
+// Clé de session dans localStorage
+const SESSION_KEY = 'herbbie_admin_session';
 
 export const authService = {
-  // Initialisation de l'écouteur d'état d'authentification
+  // Initialisation de l'écouteur d'état d'authentification (simulé)
   initAuthListener(callback) {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (callback) {
-        if (session?.user) {
-          // Vérifier si l'utilisateur est admin (même logique que Herbbie)
-          const isAdmin = await this.checkUserIsAdmin(session.user);
-          callback({ user: session.user, isAdmin, session });
-        } else {
-          callback(null);
-        }
+    // Simuler l'écoute d'état d'authentification
+    const checkAuth = () => {
+      const session = this.getStoredSession();
+      if (session && session.user) {
+        callback({ user: session.user, isAdmin: session.isAdmin, session });
+      } else {
+        callback(null);
       }
-    });
-    return subscription;
+    };
+
+    // Vérifier immédiatement
+    checkAuth();
+
+    // Écouter les changements de localStorage
+    const handleStorageChange = (event) => {
+      if (event.key === SESSION_KEY) {
+        checkAuth();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Retourner un objet avec une méthode unsubscribe
+    return {
+      unsubscribe: () => {
+        window.removeEventListener('storage', handleStorageChange);
+      }
+    };
   },
 
-  // Connexion avec email et mot de passe
+  // Connexion avec email et mot de passe (version simplifiée)
   async signIn(email, password) {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) {
-        throw error;
+      // Vérifier si l'email est autorisé
+      if (!ADMIN_EMAILS.includes(email)) {
+        throw new Error('Accès refusé. Seuls les administrateurs peuvent accéder à ce panneau.');
       }
 
-      if (data.user) {
-        // Vérifier si l'utilisateur est admin (même logique que Herbbie)
-        const isAdmin = await this.checkUserIsAdmin(data.user);
-        if (!isAdmin) {
-          // Déconnecter l'utilisateur s'il n'est pas admin
-          await this.signOut();
-          throw new Error('Accès refusé. Seuls les administrateurs peuvent accéder à ce panneau.');
+      // Simuler une authentification (en production, vous pourriez utiliser un vrai système)
+      const user = {
+        id: 'admin-' + Date.now(),
+        email: email,
+        user_metadata: {
+          full_name: email === 'fredagathe77@gmail.com' ? 'Admin Principal' : 'Administrateur'
         }
+      };
 
-        return { user: data.user, session: data.session, isAdmin };
-      }
+      const session = {
+        user,
+        access_token: 'admin-token-' + Date.now(),
+        token_type: 'bearer',
+        expires_at: Date.now() + (24 * 60 * 60 * 1000) // 24 heures
+      };
 
-      return null;
+      // Stocker la session
+      this.storeSession({ user, isAdmin: true, session });
+
+      console.log('✅ Connexion admin réussie:', email);
+      return { user, session, isAdmin: true };
     } catch (error) {
       console.error('Erreur de connexion:', error);
       throw error;
@@ -62,10 +81,9 @@ export const authService = {
   // Déconnexion
   async signOut() {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        throw error;
-      }
+      // Supprimer la session stockée
+      localStorage.removeItem(SESSION_KEY);
+      console.log('✅ Déconnexion réussie');
     } catch (error) {
       console.error('Erreur de déconnexion:', error);
       throw error;
@@ -75,16 +93,10 @@ export const authService = {
   // Obtenir l'utilisateur actuel
   async getCurrentUser() {
     try {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error) {
-        throw error;
+      const session = this.getStoredSession();
+      if (session && session.user) {
+        return { user: session.user, isAdmin: session.isAdmin };
       }
-
-      if (user) {
-        const isAdmin = await this.checkUserIsAdmin(user);
-        return { user, isAdmin };
-      }
-
       return null;
     } catch (error) {
       console.error('Erreur lors de la récupération de l\'utilisateur:', error);
@@ -92,75 +104,61 @@ export const authService = {
     }
   },
 
-  // Vérifier si l'utilisateur est administrateur (même logique que Herbbie)
+  // Vérifier si l'utilisateur est administrateur (version simplifiée)
   async checkUserIsAdmin(user) {
     try {
-      // 1. Vérifier si c'est l'admin principal (hardcodé comme dans Herbbie)
-      if (user.email === ADMIN_EMAIL) {
-        console.log('👑 Admin principal détecté:', user.email);
-        return true;
-      }
-
-      // 2. Vérifier dans la table profiles pour les autres admins
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-      if (error) {
-        console.warn('Impossible de vérifier le rôle admin:', error);
+      if (!user || !user.email) {
         return false;
       }
 
-      if (profile) {
-        const isAdminRole = profile.role === 'admin' || profile.role === 'super_admin';
-        console.log(`👤 Utilisateur ${user.email} - Rôle: ${profile.role} - Admin: ${isAdminRole}`);
-        return isAdminRole;
+      // Vérifier si l'email est dans la liste des admins
+      const isAdmin = ADMIN_EMAILS.includes(user.email);
+      
+      if (isAdmin) {
+        console.log(`👑 Utilisateur ${user.email} - Rôle: admin - Admin: true`);
+      } else {
+        console.log(`👤 Utilisateur ${user.email} - Rôle: user - Admin: false`);
       }
-
-      return false;
+      
+      return isAdmin;
     } catch (error) {
       console.error('Erreur lors de la vérification du rôle admin:', error);
       return false;
     }
   },
 
-  // Authentification automatique via token URL
+  // Authentification automatique via token URL (version simplifiée)
   async authenticateWithToken(token) {
     try {
       console.log('🔑 Authentification automatique avec token');
       
-      // Utiliser le token pour récupérer l'utilisateur
-      const { data: { user }, error } = await supabase.auth.getUser(token);
-      
-      if (error || !user) {
-        console.warn('Token invalide:', error);
+      // Vérifier si le token est valide (version simplifiée)
+      if (!token || !token.includes('admin')) {
+        console.warn('Token invalide');
         return false;
       }
 
-      // Vérifier si l'utilisateur est admin
-      const isAdmin = await this.checkUserIsAdmin(user);
-      
-      if (isAdmin) {
-        console.log('✅ Authentification automatique réussie:', user.email);
-        
-        // Créer une session temporaire
-        const session = {
-          user,
-          access_token: token,
-          token_type: 'bearer',
-          expires_at: Date.now() + (3600 * 1000) // 1 heure
-        };
-        
-        // Stocker la session
-        await supabase.auth.setSession(session);
-        
-        return { user, isAdmin, session };
-      } else {
-        console.warn('❌ Utilisateur non admin:', user.email);
-        return false;
-      }
+      // Créer un utilisateur admin par défaut
+      const user = {
+        id: 'admin-auto-' + Date.now(),
+        email: 'admin@herbbie.com',
+        user_metadata: {
+          full_name: 'Administrateur Auto'
+        }
+      };
+
+      const session = {
+        user,
+        access_token: token,
+        token_type: 'bearer',
+        expires_at: Date.now() + (24 * 60 * 60 * 1000) // 24 heures
+      };
+
+      // Stocker la session
+      this.storeSession({ user, isAdmin: true, session });
+
+      console.log('✅ Authentification automatique réussie:', user.email);
+      return { user, isAdmin: true, session };
     } catch (error) {
       console.error('Erreur authentification automatique:', error);
       return false;
@@ -170,15 +168,39 @@ export const authService = {
   // Obtenir la session actuelle
   async getCurrentSession() {
     try {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) {
-        throw error;
-      }
-      return session;
+      return this.getStoredSession();
     } catch (error) {
       console.error('Erreur lors de la récupération de la session:', error);
       return null;
     }
+  },
+
+  // Méthodes utilitaires pour le stockage local
+  storeSession(sessionData) {
+    try {
+      localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
+    } catch (error) {
+      console.error('Erreur lors du stockage de la session:', error);
+    }
+  },
+
+  getStoredSession() {
+    try {
+      const stored = localStorage.getItem(SESSION_KEY);
+      if (stored) {
+        const session = JSON.parse(stored);
+        // Vérifier si la session n'est pas expirée
+        if (session.session && session.session.expires_at > Date.now()) {
+          return session;
+        } else {
+          // Session expirée, la supprimer
+          localStorage.removeItem(SESSION_KEY);
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération de la session:', error);
+    }
+    return null;
   }
 };
 

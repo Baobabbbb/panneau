@@ -1,6 +1,5 @@
 // Service pour synchroniser les fonctionnalités avec Herbbie
 const HERBBIE_STORAGE_KEY = 'herbbie_features_config';
-const PANEL_STORAGE_KEY = 'herbbie_features_config';
 
 // Fonction pour synchroniser les fonctionnalités avec Herbbie
 export const syncFeaturesWithHerbbie = (features) => {
@@ -8,9 +7,22 @@ export const syncFeaturesWithHerbbie = (features) => {
     // Sauvegarder dans le localStorage pour que Herbbie puisse les récupérer
     localStorage.setItem(HERBBIE_STORAGE_KEY, JSON.stringify(features));
     
-    // Déclencher un événement personnalisé pour notifier Herbbie
+    // Déclencher plusieurs événements pour s'assurer que Herbbie reçoit la mise à jour
     window.dispatchEvent(new CustomEvent('herbbieFeaturesUpdate', { 
       detail: features 
+    }));
+    
+    // Événement alternatif pour compatibilité
+    window.dispatchEvent(new CustomEvent('featuresUpdated', { 
+      detail: features 
+    }));
+    
+    // Événement de stockage pour déclencher les écouteurs storage
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: HERBBIE_STORAGE_KEY,
+      newValue: JSON.stringify(features),
+      oldValue: localStorage.getItem(HERBBIE_STORAGE_KEY),
+      storageArea: localStorage
     }));
     
     console.log('🔄 Fonctionnalités synchronisées avec Herbbie:', features);
