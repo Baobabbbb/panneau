@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { getFeatures, updateFeature, resetFeatures } from '../services/features';
+import { syncFeaturesWithHerbbie } from '../services/herbbieSync';
 import './FeatureManager.css';
 
 const FeatureManager = () => {
@@ -32,6 +33,10 @@ const FeatureManager = () => {
       
       if (updatedFeatures) {
         setFeatures(updatedFeatures);
+        
+        // Synchroniser avec Herbbie
+        syncFeaturesWithHerbbie(updatedFeatures);
+        
         const status = !currentEnabled ? 'activée' : 'désactivée';
         showNotification(`Fonctionnalité ${features[featureKey]?.name} ${status}`, 'success');
       } else {
@@ -48,6 +53,10 @@ const FeatureManager = () => {
       const resetFeaturesData = await resetFeatures();
       if (resetFeaturesData) {
         setFeatures(resetFeaturesData);
+        
+        // Synchroniser avec Herbbie
+        syncFeaturesWithHerbbie(resetFeaturesData);
+        
         showNotification('Toutes les fonctionnalités ont été réinitialisées', 'success');
       } else {
         showNotification('Erreur lors de la réinitialisation', 'error');
